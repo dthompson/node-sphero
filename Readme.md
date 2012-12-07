@@ -8,17 +8,18 @@ Connect your [Sphero](http://gosphero.com) to your laptop over bluetooth. At thi
 
 Add Sphero to your app:
 
-    var roundRobot = require('node-sphero');
-    var sphero = new roundRobot.Sphero();
+```javascript
+var roundRobot = require('node-sphero');
+var sphero = new roundRobot.Sphero();
 
-    sphero.connect();
+sphero.on('connected', function(ball) {
+  ball.setRGBLED(0, 255, 0, false);
+});
 
-    sphero.on("connected", function(ball){
-      var rgb = color();
-      sphero.setRGBLED(0, 255, 0, false);
-    });
+sphero.connect();
+```
 
-Run that, and your sphero should turn #00FF00... green.
+Run that and your sphero should turn #00FF00... green.
 
 Check out the examples for more ideas.
 
@@ -36,7 +37,7 @@ You will need node.js 8.x (32-bit only), (node-gyp(included with node) / Python 
 You must use the 32bit version of nodejs, because there are issues with the serialport builds on the x64 platform.
 You can install NodeJS by downloading it from [nodejs.org](http://nodejs.org/download/) Current 32bit version is available here: [http://nodejs.org/dist/v0.8.9/node-v0.8.9-x86.msi](http://nodejs.org/dist/v0.8.9/node-v0.8.9-x86.msi)
 
-Python. Remember you want the latest 2.x releease: [python windows binaries](http://www.python.org/download/releases/)
+Python. Remember you want the latest 2.x release: [python windows binaries](http://www.python.org/download/releases/)
 
 If you dont have visual studio 2010, you can download the [express edition](http://www.microsoft.com/visualstudio/eng/downloads#d-2010-express) for free. You'll want the c++ version, or the all in one.
 
