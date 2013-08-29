@@ -1,22 +1,9 @@
 var roundRobot = require('../');
 
-var request = require('request')
-
 var keypress = require('keypress');
-
-
-var alarmhost = process.argv[2] || 'http://10.0.2.5'
-request(alarmhost+'/safe',function(err){
-  if(err) console.log(err);
-})
-
-var boxsize = parseInt(process.argv[3] || 50)
-
 
 var sphero = new roundRobot.Sphero();
 
-
-var last = true
 
 
 // make `process.stdin` begin emitting "keypress" events
@@ -31,17 +18,19 @@ sphero.on("connected", function(ball){
     if( err ) console.log(err);
   })
 
-  console.log("Connected! Box Size: "+boxsize);
-  console.log("  c - change color");
-  console.log("  b/n - backled on/off");
+  console.log("Connected!");
+  console.log("  c - change color and reset location");
+  console.log("  b - backled on/off");
+  console.log("  , - reduce move 1/10th");
+  console.log("  . - increase move 1/10th");
   console.log("  up - move forward");
   console.log("  back - stop");
   console.log("  left - change heading 15 deg left");
   console.log("  right - change heading 15 deg right\n\n");
 
   var backledon = 1
-  var speed = 0.3
-  var rgb = color();
+  var speed     = 0.3
+  var rgb       = color();
 
   sphero.setRGBLED(rgb[0], rgb[1], rgb[2], false);
   sphero.setBackLED(backledon);
@@ -50,18 +39,10 @@ sphero.on("connected", function(ball){
     if( 0x03 == out.ID_CODE && out.DATA ) {
       var x = out.DATA.readInt16BE(0)
       var y = out.DATA.readInt16BE(2)
-      var inside = Math.abs(x) < boxsize && Math.abs(y) < boxsize
 
-      console.log('\033[F'+(!inside?'\033[31m':'')+
+      console.log('\033[F'+
                   '                                                     '+
                   '\033[0GLocation: '+x+', '+y+'\033[0m  Move: '+Math.round(10*speed))
-
-      if( last != inside ) {
-        request(alarmhost+'/'+(inside?'safe':'unsafe'),function(err){
-          if(err) console.log(err);
-        })
-        last = inside
-      }
     }
   })
 
