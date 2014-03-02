@@ -10,10 +10,15 @@ var sphero = new roundRobot.Sphero();
 keypress(process.stdin);
 
 
+var sphero_id = process.argv[2]
+//console.log(sphero_id)
 
 console.log('connecting...')
-sphero.connect();
+sphero.connect( sphero_id );
 sphero.on("connected", function(ball){
+  ball.setStabilization(true);
+  //ball.setRotation(50);
+
   ball.configureLocator(true,0,0,0,function(err){
     if( err ) console.log(err);
   })
@@ -31,6 +36,7 @@ sphero.on("connected", function(ball){
   var backledon = 1
   var speed     = 0.3
   var rgb       = color();
+  var heading   = 0
 
   sphero.setRGBLED(rgb[0], rgb[1], rgb[2], false);
   sphero.setBackLED(backledon);
@@ -58,7 +64,7 @@ sphero.on("connected", function(ball){
 
   // listen for the "keypress" event
   process.stdin.on('keypress', function (ch, key) {
-
+    
     if (key && key.ctrl && key.name == 'c') {
       process.stdin.pause(); process.exit();
     }
@@ -70,12 +76,19 @@ sphero.on("connected", function(ball){
       })
     }
     if(key && key.name == 'b') { backledon = (1+backledon)%2; sphero.setBackLED(backledon);  }
-    if(key && key.name == 'right') sphero.setHeading(30);
-    if(key && key.name == 'left') sphero.setHeading(330);
-    if(key && key.name == 'up') sphero.roll(0, speed);
-    if(key && key.name == 'down') sphero.roll(0, 0);
+    //if(key && key.name == 'right') sphero.setHeading(30);
+    //if(key && key.name == 'left') sphero.setHeading(330);
+    if(key && key.name == 'right') sphero.roll( heading = (heading+30)%360, 0);
+    if(key && key.name == 'left') sphero.roll( heading = (360+heading-30)%360, 0);
+    if(key && key.name == 'up') sphero.roll(heading, speed);
+    if(key && key.name == 'down') sphero.roll(heading, 0);
     if(key && key.name == 'x') sphero.setHeading(45).setHeading(315).setBackLED(1);
-    
+
+    if(key && key.name == 'q') {
+      sphero.close();
+      process.exit();
+    }
+
     if(ch == ',') { speed -= 0.1; speed = speed < 0.1 ? 0.1 : speed; } 
     if(ch == '.') { speed += 0.1; speed = speed > 1.0 ? 1.0 : speed; } 
   });
